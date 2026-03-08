@@ -1,0 +1,6 @@
+# Libraries for your Shrimp MVP
+PubSubClient
+ArduinoJson
+DHT sensor library
+Adafruit Unified Sensor
+SdFat
