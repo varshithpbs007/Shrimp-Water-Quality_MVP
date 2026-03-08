@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -19.2, "left": 331.24, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pH", "top": -78.1, "left": 95.8, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "DO", "top": -68.5, "left": -19.4, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -70.8,
+      "left": 234.2,
+      "attrs": { "color": "red" }
+    },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -201.3, "left": 369, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "pot1:VCC", "esp:3V3", "red", [ "v9.6", "h191.2" ] ],
+    [ "pot1:SIG", "esp:34", "green", [ "v48", "h201.2" ] ],
+    [ "pot1:GND", "esp:GND.1", "black", [ "v9.6" ] ],
+    [ "pot2:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pot2:SIG", "esp:35", "green", [ "v0" ] ],
+    [ "pot2:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "dht1:SDA", "esp:15", "green", [ "v48", "h76.9", "v192" ] ],
+    [ "dht1:GND", "esp:GND.2", "black", [ "v28.8", "h38.4", "v67.2" ] ],
+    [ "dht1:VCC", "esp:3V3", "red", [ "v38.4", "h-67.2", "v57.6" ] ],
+    [ "led1:A", "esp:2", "green", [ "v0", "h201.6", "v172.8" ] ],
+    [ "led1:C", "esp:GND.1", "green", [ "v0" ] ],
+    [ "pH:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pH:SIG", "esp:34", "green", [ "v57.6", "h201.2" ] ],
+    [ "pH:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "DO:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "DO:SIG", "esp:35", "green", [ "v0" ] ],
+    [ "DO:VCC", "esp:3V3", "red", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
