@@ -1,4 +1,3 @@
-
 import re
 
 sample_log = """
