@@ -1,3 +1,7 @@
+# Python log parser that extracts RSSI, MCS, PHY rate, throughput, latency and retry rate from WLAN logs, 
+# then classifies each test point as PASS, WARNING or FAIL. 
+# This is similar to validation automation where raw logs are converted into useful KPIs.
+
 import re
 
 sample_log = """
