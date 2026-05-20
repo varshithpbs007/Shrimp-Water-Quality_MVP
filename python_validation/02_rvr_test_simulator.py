@@ -1,3 +1,6 @@
+# RvR testing checks how throughput degrades as signal strength reduces. 
+# I simulated distance, RSSI, throughput, latency and packet loss, then generated a CSV report with pass/fail classification.
+
 import csv
 
 test_data = [
