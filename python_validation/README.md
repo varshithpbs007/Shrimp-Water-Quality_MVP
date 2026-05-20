@@ -1,6 +1,6 @@
-# Python WLAN Validation Practice
+# WLAN Validation
 
-This folder contains Python scripts developed to practice WLAN validation automation concepts relevant to embedded Wi-Fi and IoT systems.
+This folder contains Python scripts to observe WLAN validation automation concepts relevant to embedded Wi-Fi and IoT systems.
 
 ## Scripts
 
