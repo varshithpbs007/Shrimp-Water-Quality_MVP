@@ -2,14 +2,14 @@
 Project: WLAN KPI Log Parser for ESP32 Aquaculture IoT Simulation
 
 Description:
-This script parses simulated WLAN validation logs related to an ESP32-based
+1. This script parses simulated WLAN validation logs related to an ESP32-based
 smart aquaculture monitoring system.
 
-Since the current project is implemented using Wokwi simulation, real router
+2. Since the current project is implemented using Wokwi simulation, real router
 or Wi-Fi driver logs are not available. Therefore, this script uses simulated
 WLAN test logs to practice Python-based validation automation.
 
-The parser extracts:
+3. The parser extracts:
 - RSSI
 - MCS index
 - PHY rate
@@ -18,10 +18,9 @@ The parser extracts:
 - Retry rate
 - MQTT publish status
 
-It then classifies each test point as PASS, WARNING, or FAIL.
+4. It then classifies each test point as PASS, WARNING, or FAIL.
 
-Relevance:
-This demonstrates Python skills useful in WLAN validation roles:
+5. Relevance:
 - Log parsing
 - KPI extraction
 - Pass/fail decision logic
