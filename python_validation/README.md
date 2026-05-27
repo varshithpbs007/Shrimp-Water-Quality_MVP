@@ -13,7 +13,7 @@ Parses simulated WLAN logs and extracts:
 - Latency
 - Retry rate
 
-Genertes a CSV report of the extracted KPIs from the test points, which can be opened in excel or as a text.
+Generates a CSV report of the extracted KPIs from the test points, which can be opened in excel or as a text.
 
 ### 2. RvR Test Simulator
 ### 3. MQTT Telemetry Validator
