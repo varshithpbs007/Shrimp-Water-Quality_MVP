@@ -1,163 +1,165 @@
 """
-Project: WLAN KPI Log Parser for ESP32 Aquaculture IoT Simulation
+PROJECT: WLAN KPI Log parser and CSV report generator
 
-Description:
-1. This script parses simulated WLAN validation logs related to an ESP32-based
-smart aquaculture monitoring system.
+DESCRIPTION:
 
-2. Since the current project is implemented using Wokwi simulation, real router
-or Wi-Fi driver logs are not available. Therefore, this script uses simulated
-WLAN test logs to practice Python-based validation automation.
+* To simulate router, iperf, wireshark, modem logs , some sample logs are taken 
+* A Regex pattern is developed, which matches the log pattern which contains the key KPIs
+* re.findall() is used to match the pattern in sample logs and store in matches, which can be indexed to obtain enumerated logs
+* Named arrays are declared to store individual KPIs
+* KPI values are appended into arrays by iterations enumaerated by number of matches starting from 1
+* Based on KPI thresholds, status of the test point is updated
+* If logs are found, a csv report is generated and KPIs which are extracted are written into that csv file as rows
 
-3. The parser extracts:
-- RSSI
-- MCS index
-- PHY rate
-- TCP throughput
-- Latency
-- Retry rate
-- MQTT publish status
-
-4. It then classifies each test point as PASS, WARNING, or FAIL.
-
-5. Relevance:
-- Log parsing
-- KPI extraction
-- Pass/fail decision logic
-- Report generation
-- Embedded Wi-Fi telemetry validation thinking
 """
 
-import re
-import csv
 
 
+import re #pythons "regular expression" library, we use it to search patterns inside text logs
+import csv #pythons built-in library for writing .csv files, which can be opened in excel
+
+#mutli-line string containing many simulated WLAN log lines
+#This automation flow can be applied to real-router, driver, iperf, or packet-capture logs
+
+print("Sample log:\n")
 sample_log = """
-[10:00:01] DEVICE=ESP32_AQUA RSSI=-42 dBm MCS=9 PHY_RATE=1201 Mbps TCP_THROUGHPUT=845 Mbps LATENCY=12 ms RETRY=3% MQTT=SUCCESS
-[10:00:06] DEVICE=ESP32_AQUA RSSI=-55 dBm MCS=7 PHY_RATE=864 Mbps TCP_THROUGHPUT=620 Mbps LATENCY=18 ms RETRY=7% MQTT=SUCCESS
-[10:00:11] DEVICE=ESP32_AQUA RSSI=-68 dBm MCS=5 PHY_RATE=432 Mbps TCP_THROUGHPUT=290 Mbps LATENCY=35 ms RETRY=15% MQTT=SUCCESS
-[10:00:16] DEVICE=ESP32_AQUA RSSI=-78 dBm MCS=3 PHY_RATE=144 Mbps TCP_THROUGHPUT=85 Mbps LATENCY=72 ms RETRY=31% MQTT=FAIL
+[10:00:01] DEVICE=ESP32_AQUA RSSI=-42 dBm MCS=9 PHY_RATE=1201 Mbps TCP_THROUGHPUT=845 Mbps LATENCY=12 ms RETRY=3% MQTT_publish=SUCCESS 
+[10:00:01] DEVICE=ESP32_AQUA RSSI=-55 dBm MCS=7 PHY_RATE=864 Mbps TCP_THROUGHPUT=620 Mbps LATENCY=18 ms RETRY=7% MQTT_publish=SUCCESS
+[10:00:01] DEVICE=ESP32_AQUA RSSI=-68 dBm MCS=5 PHY_RATE=432 Mbps TCP_THROUGHPUT=290 Mbps LATENCY=35 ms RETRY=15% MQTT_publish=SUCCESS
+[10:00:01] DEVICE=ESP32_AQUA RSSI=-78 dBm MCS=3 PHY_RATE=144 Mbps TCP_THROUGHPUT=85 Mbps LATENCY=72 ms RETRY=31% MQTT_publish=FAIL
 """
 
+print(sample_log)
+
+#Regex pattern is used to search structured patterns inside text logs
+#Regex extracts strings, so later while storing we convert a number to an integer
+# re.search() finds only the first match, so we use re.findall() to find all matching lines and
+# return them as a list
 
 pattern = (
-    r"RSSI=\s*(-?\d+)\s*dBm\s*"
-    r"MCS=\s*(\d+)\s*"
-    r"PHY_RATE=\s*(\d+)\s*Mbps\s*"
-    r"TCP_THROUGHPUT=\s*(\d+)\s*Mbps\s*"
-    r"LATENCY=\s*(\d+)\s*ms\s*"
-    r"RETRY=\s*(\d+)%\s*"
-    r"MQTT=\s*(SUCCESS|FAIL)"
+    r"RSSI=(-?\d+)\s*dBm\s*"
+    r"MCS=(\d+)\s*"
+    r"PHY_RATE=(\d+)\s*Mbps\s*"
+    r"TCP_THROUGHPUT=(\d+)\s*Mbps\s*"
+    r"LATENCY=(\d+)\s*ms\s*"
+    r"RETRY=(\d+)%"
 )
 
+matches = re.findall(pattern, sample_log)
 
-def classify_test_result(throughput, latency, retry, mqtt_status):
-    """
-    Classifies WLAN test result based on validation thresholds.
-    """
 
-    if mqtt_status == "FAIL":
-        return "FAIL"
+rssi_values = []
+mcs_values = []
+phy_rate_values =[]
+tcp_throughput_values =[]
+latency_values = []
+retry_values = []
 
-    if throughput > 500 and latency < 30 and retry < 10:
-        return "PASS"
+report_rows = []
 
-    elif throughput > 150 and latency < 60 and retry < 25:
-        return "WARNING"
+print("ESP32 Aquaculture WLAN KPI Validation Report")
+print("-"*90)
 
+for index, match in enumerate(matches, start=1): 
+    rssi = int(match[0])
+    mcs = int(match[1])
+    phy_rate = int(match[2])
+    tcp_throughput = int(match[3])
+    latency = int(match[4])
+    retry = int(match[5])
+    
+    rssi_values.append(rssi)
+    mcs_values.append(mcs)
+    phy_rate_values.append(phy_rate)
+    tcp_throughput_values.append(tcp_throughput)
+    latency_values.append(latency)
+    retry_values.append(retry)
+    
+   # Now every WLAN test point should be judged.
+   # We use the following thresholds for that:
+   # PASS ---> tcp_throughput > 500, Latency < 30, Retry < 10
+   # WARNING ---> tcp_throughput > 150, Latency < 60, Retry < 25
+   # FAIL ---> Anything worse
+    
+    if tcp_throughput > 500 and latency < 30 and retry < 10:
+        status = "PASS"
+    elif tcp_throughput > 150 and latency < 60 and retry < 25:
+        status = "WARNING"
     else:
-        return "FAIL"
+        status = "FAIL"
+        
+    report_rows.append({
+        
+     "test_point" : index,
+     "rssi_dBm" : rssi,
+     "mcs" : mcs,
+     "phy_rate_Mbps" : phy_rate,
+     "tcp_throughput_Mbps" : tcp_throughput,
+     "latency_ms" : latency,
+     "retry_percent" : retry,
+     "status" : status
+        
+    })
+    
+    print(
+        f"Test {index}: "
+        f"RSSI={rssi} dBm | "
+        f"MCS={mcs} | "
+        f"PHY={phy_rate} Mbps | "
+        f"Throughput={tcp_throughput} Mbps | "
+        f"Latency={latency} ms | "
+        f"Retry={retry} % | "
+        f"Status={status}  "
+    )
+    
+    print("-"*90)
+    
 
 
-def main():
-    matches = re.findall(pattern, sample_log)
 
-    if not matches:
-        print("No valid WLAN KPI logs found.")
-        return
-
-    rssi_values = []
-    throughput_values = []
-    latency_values = []
-    retry_values = []
-    report_rows = []
-
-    print("ESP32 Aquaculture WLAN KPI Validation Report")
-    print("-" * 100)
-
-    for index, match in enumerate(matches, start=1):
-        rssi = int(match[0])
-        mcs = int(match[1])
-        phy_rate = int(match[2])
-        throughput = int(match[3])
-        latency = int(match[4])
-        retry = int(match[5])
-        mqtt_status = match[6]
-
-        status = classify_test_result(
-            throughput,
-            latency,
-            retry,
-            mqtt_status
-        )
-
-        rssi_values.append(rssi)
-        throughput_values.append(throughput)
-        latency_values.append(latency)
-        retry_values.append(retry)
-
-        report_rows.append({
-            "test_point": index,
-            "rssi_dbm": rssi,
-            "mcs": mcs,
-            "phy_rate_mbps": phy_rate,
-            "tcp_throughput_mbps": throughput,
-            "latency_ms": latency,
-            "retry_percent": retry,
-            "mqtt_status": mqtt_status,
-            "validation_status": status
-        })
-
-        print(
-            f"Test {index}: "
-            f"RSSI={rssi} dBm | "
-            f"MCS={mcs} | "
-            f"PHY={phy_rate} Mbps | "
-            f"TCP={throughput} Mbps | "
-            f"Latency={latency} ms | "
-            f"Retry={retry}% | "
-            f"MQTT={mqtt_status} | "
-            f"Status={status}"
-        )
-
-    print("-" * 100)
+if matches:
     print("Summary")
-    print(f"Average RSSI       : {sum(rssi_values) / len(rssi_values):.2f} dBm")
-    print(f"Average Throughput : {sum(throughput_values) / len(throughput_values):.2f} Mbps")
-    print(f"Average Latency    : {sum(latency_values) / len(latency_values):.2f} ms")
+    print(f"Total Test Points : {len(matches)}")
+    print(f"Average RSSI : {sum(rssi_values) / len(rssi_values):.2f} dBm")
+    print(f"Average PHY rate : {sum(phy_rate_values) / len(phy_rate_values):.2f} Mbps")
+    print(f"Average tcp rate : {sum(tcp_throughput_values) / len(tcp_throughput_values):.2f} Mbps")
+    print(f"Average latency : {sum(latency_values) / len(latency_values):.2f} ms")
     print(f"Average Retry Rate : {sum(retry_values) / len(retry_values):.2f}%")
-    print(f"Worst RSSI         : {min(rssi_values)} dBm")
-    print(f"Best Throughput    : {max(throughput_values)} Mbps")
-
-    with open("wlan_kpi_report.csv", "w", newline="") as file:
-        fieldnames = [
-            "test_point",
-            "rssi_dbm",
-            "mcs",
-            "phy_rate_mbps",
-            "tcp_throughput_mbps",
-            "latency_ms",
-            "retry_percent",
-            "mqtt_status",
-            "validation_status"
+    print(f"Worst RSSI : {min(rssi_values)} dBm")
+    print(f"Best Throughput : {max(tcp_throughput_values)} Mbps")
+        
+        
+        
+    with open("wlan_kpi_report.csv", "w" , newline="") as file:
+        fieldnames =[
+                "test_point",
+                "rssi_dBm",
+                "mcs",
+                "phy_rate_Mbps",
+                "tcp_throughput_Mbps",
+                "latency_ms",
+                "retry_percent",
+                "status"
         ]
-
+            
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(report_rows)
+            
+            
+        print("\nCSV report generated as : wlan_kpi_report.csv")
+        
+        
+else:
+        print("No valid KPI logs found")
 
-    print("\nCSV report generated: wlan_kpi_report.csv")
 
 
-if __name__ == "__main__":
-    main()
+
+
+
+
+
+
+
+
