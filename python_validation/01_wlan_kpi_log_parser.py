@@ -5,7 +5,7 @@ DESCRIPTION:
 
 * To simulate router, iperf, wireshark, modem logs , some sample logs are taken 
 * A Regex pattern is developed, which matches the log pattern which contains the key KPIs
-* re.findall() is used to match the pattern in sample logs and store in matches, which can be indexed to obtain enumerated logs
+* As re.search() finds only the first match, re.findall() is used to match the pattern in sample logs and store in matches, which can be indexed to obtain enumerated logs
 * Named arrays are declared to store individual KPIs
 * KPI values are appended into arrays by iterations enumaerated by number of matches starting from 1
 * Based on KPI thresholds, status of the test point is updated
