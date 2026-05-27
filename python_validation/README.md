@@ -4,7 +4,7 @@ This folder contains Python scripts to observe WLAN validation automation concep
 
 ## Scripts
 
-### 1. WLAN KPI Log Parser
+### 1. WLAN KPI Log Parser and CSV report generator
 Parses simulated WLAN logs and extracts:
 - RSSI
 - MCS index
@@ -13,31 +13,11 @@ Parses simulated WLAN logs and extracts:
 - Latency
 - Retry rate
 
+Genertes a CSV report of the extracted KPIs from the test points, which can be opened in excel or as a text.
+
 ### 2. RvR Test Simulator
-Simulates Range vs Rate testing by analyzing:
-- Distance
-- RSSI
-- Throughput
-- Latency
-- Packet loss
-
-Generates a CSV report.
-
 ### 3. MQTT Telemetry Validator
-Validates JSON telemetry packets from the ESP32 aquaculture monitoring system.
-
-Checks:
-- JSON format
-- Sensor value ranges
-- Aerator control logic
-
 ### 4. WLAN Regression Framework
-A mini regression test suite for:
-- Association
-- Throughput
-- Latency
-- Packet loss
-- Reconnection time
 
 ## Relevance
 
