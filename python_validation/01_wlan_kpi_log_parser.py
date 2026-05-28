@@ -3,14 +3,21 @@ PROJECT: WLAN KPI Log parser and CSV report generator
 
 DESCRIPTION:
 
-* To simulate router, iperf, wireshark, modem logs , some sample logs are taken 
-* A Regex pattern is developed, which matches the log pattern which contains the key KPIs
-* As re.search() finds only the first match, re.findall() is used to match the pattern in sample logs and store in matches, which can be indexed to obtain enumerated logs
-* Named arrays are declared to store individual KPIs
-* KPI values are appended into arrays by iterations enumaerated by number of matches starting from 1
-* Based on KPI thresholds, status of the test point is updated
-* If logs are found, a csv report is generated and KPIs which are extracted are written into that csv file as rows
+* This script simulates WLAN validation log analysis for an ESP32-based smart aquaculture IoT system
 
+* Since the project so far is implemented and validated using wokwi simulation, real router, driver, iperf, or packet-capture logs are NOT available.
+
+* Therefore simulated WLAN KPI logs are used to demonstrate Python-based validation automation flow.
+
+  The script performs the following operations in order:
+  
+  1. A Regex pattern is developed, which matches the log pattern which contains the key KPIs.
+  2. It parses the simulated WLAN KPI logs using Regular Expressions (Regex)
+  3. Then it extracts imp KPIs like: RSSI, MCS Index, PHY rate, TCP throughput, Latency, Retry rate, using re.findall() to extract multiple WLAN test points from logs
+  4. Stores the extracted KPIs into dedicated lists which are individually used for: averaging, worst-case analysis, and reporting.
+  5. Applies threshold-based validation logic to classify each test point as: PASS/ WARNING / FAIL
+  6. Generates a CSV validation report using csv.DictWriter()
+  
 """
 
 
